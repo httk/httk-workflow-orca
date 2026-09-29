@@ -1,0 +1,4 @@
+[plugin]
+name = "httk-workflow-orca"
+description = "Example ORCA workflow packages (single-point energy)"
+workflows = ["workflows/orca-singlepoint"]
