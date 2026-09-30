@@ -5,9 +5,9 @@ of *httk₂*, see [docs.httk.org](https://docs.httk.org).
 
 The module adds ORCA quantum-chemistry support to *httk-workflow*: the Python
 helpers in `httk.codes.orca` (input writing, output parsing, diagnostics,
-supervised execution and a result collector), the Bash API a Bash runner sources
-as `$HTTK_WORKFLOW_ORCA_BASH_API`, and the `orca-*` bridge commands behind that
-API. Installing it registers the `orca` code with *httk₂* through the
+supervised execution and result-reading helpers), the Bash API a Bash runner
+sources as `$HTTK_WORKFLOW_ORCA_BASH_API`, and the `orca-*` bridge commands
+behind that API. Installing it registers the `orca` code with *httk₂* through the
 `httk.registry.codes.orca` registration package. The repository also carries
 the example workflow package `orca.singlepoint`. The output parsers are
 validated against synthetic fixtures only; see {doc}`usage`.

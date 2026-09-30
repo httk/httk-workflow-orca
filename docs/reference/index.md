@@ -2,7 +2,8 @@
 
 This is the generated API reference. It documents the deliberate public surface
 of the package: the facade `httk.codes.orca`, which re-exports the helpers of its
-internal `inputs`, `outputs`, `diagnostics`, `reports` and `collect` modules. The
+internal `inputs`, `outputs`, `diagnostics` and `reports` modules, and the
+collect-hook helpers in `httk.codes.orca.collect`. The
 `httk.registry.codes.orca` registration package and the private `orca-*` bridge
 module are not part of it.
 

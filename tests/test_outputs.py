@@ -1,17 +1,12 @@
 """``parse_orca_output`` reads the ORCA 5/6 markers of the synthetic fixtures and of two real outputs."""
 
 import gzip
-import shutil
 from pathlib import Path
-from types import SimpleNamespace
-from typing import cast
 
 import pytest
-from httk.core import DataRecord
-from httk.workflow.collecting import JobRecord
 
 from conftest import DATA
-from httk.codes.orca import EH_TO_EV, collect_orca, diagnose_orca, parse_orca_output
+from httk.codes.orca import EH_TO_EV, diagnose_orca, parse_orca_output
 
 
 def test_a_converged_single_point() -> None:
@@ -88,20 +83,3 @@ def test_a_real_orca_6_geometry_optimization(tmp_path: Path) -> None:
     assert (result.final_energy_eh, result.scf_converged, result.scf_cycles) == (-382.055133399486, True, 3)
     assert (result.optimization_converged, result.terminated_normally, result.errors) == (True, True, ())
     assert diagnose_orca(tmp_path, output="dvb_gopt.out") == ()
-
-
-def _record(root: Path) -> JobRecord:
-    return cast(JobRecord, SimpleNamespace(data=None, workdir=root, workspace_id="w", job_id="j"))
-
-
-def test_collect_takes_only_a_converged_energy(tmp_path: Path) -> None:
-    shutil.copy(DATA / "water_sp.out", tmp_path / "orca.out")
-    (energy,) = collect_orca(_record(tmp_path)).values()
-    assert cast(DataRecord, energy).value == pytest.approx(-75.960185412345 * EH_TO_EV)
-    shutil.copy(DATA / "water_scf_noconv.out", tmp_path / "orca.out")
-    with pytest.raises(ValueError, match="no converged final single point energy"):
-        collect_orca(_record(tmp_path))
-    text = (DATA / "water_opt.out").read_text(encoding="utf-8").replace("THE OPTIMIZATION HAS CONVERGED", "")
-    (tmp_path / "orca.out").write_text(text, encoding="utf-8")
-    with pytest.raises(ValueError, match="did not converge"):
-        collect_orca(_record(tmp_path))

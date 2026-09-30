@@ -137,10 +137,21 @@ guess (and possibly start the screen reader).
 
 ## Collecting
 
-{py:func}`~httk.codes.orca.collect_orca` is the collect hook body: it reads
-`orca.out` from the job's published data, or its persistent workdir, and
-returns the `total_energy` output, the final single point energy of the
-molecule, as a {py:class}`httk.core.DataRecord` of the property
+{py:func}`~httk.codes.orca.collect.read_total_energy` reads the final single
+point energy of the molecule from an ORCA output file as a
+{py:class}`httk.core.DataRecord` of the property
 `https://schemas.httk.org/defs/v0.1/properties/core/total_energy` in eV. An
 output without a converged energy, or of a geometry optimization that did not
 converge, is refused.
+
+The packaged workflow's `collect.py` hook shows how a workflow locates the file
+with `record.result_file` and returns the role mapping; to collect more outputs,
+add lines to your copy of the hook:
+
+```python
+from httk.codes.orca.collect import read_total_energy
+
+
+def collect(record):
+    return {"total_energy": read_total_energy(record.result_file("orca.out"))}
+```

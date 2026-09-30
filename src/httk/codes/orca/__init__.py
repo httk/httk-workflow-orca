@@ -2,8 +2,9 @@
 
 ``inputs`` writes molecular ORCA inputs, ``outputs`` parses its text output,
 ``diagnostics`` classifies a finished calculation, ``reports`` runs it under
-supervision, and ``collect`` turns a finished job into workflow outputs. This
-package is a thin facade re-exporting their surface. The example workflow
+supervision, and ``collect`` reads workflow outputs out of result files, for
+workflow collect hooks. This package is a thin facade re-exporting their
+surface. The example workflow
 package ``workflows/orca-singlepoint`` in this distribution's repository
 builds on it. The parsers are validated against synthetic output fixtures and
 two real ORCA 6 outputs (a single point and a geometry optimization).
@@ -27,7 +28,6 @@ register_citation(
     ),
 )
 
-from .collect import collect_orca
 from .diagnostics import diagnose_orca
 from .inputs import write_orca_input
 from .outputs import EH_TO_EV, OrcaResult, parse_orca_output
@@ -37,7 +37,6 @@ __all__ = [
     "EH_TO_EV",
     "OrcaResult",
     "OrcaRunReport",
-    "collect_orca",
     "diagnose_orca",
     "parse_orca_output",
     "run_orca",

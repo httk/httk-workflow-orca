@@ -12,10 +12,10 @@
 support to [*httk-workflow*](https://github.com/httk/httk-workflow), the
 workflow engine of [*httk₂*](https://github.com/httk/httk2). It provides
 `httk.codes.orca`: writing molecular ORCA inputs, parsing its output, stable
-diagnostics, supervised execution with a classified run report, and a collector
-for workflow outputs; and the Bash API that exposes the same helpers to Bash
-runners. Installing it registers the `orca` code with *httk₂*; nothing needs to
-be configured. ORCA itself is proprietary and not included.
+diagnostics, supervised execution with a classified run report, and helpers
+for reading workflow outputs; and the Bash API that exposes the same helpers to
+Bash runners. Installing it registers the `orca` code with *httk₂*; nothing
+needs to be configured. ORCA itself is proprietary and not included.
 
 > **Mostly synthetic fixtures.** The output parsers are validated against
 > hand-written synthetic fixtures that follow ORCA 5/6's documented output
