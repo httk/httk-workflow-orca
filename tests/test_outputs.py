@@ -83,3 +83,10 @@ def test_a_real_orca_6_geometry_optimization(tmp_path: Path) -> None:
     assert (result.final_energy_eh, result.scf_converged, result.scf_cycles) == (-382.055133399486, True, 3)
     assert (result.optimization_converged, result.terminated_normally, result.errors) == (True, True, ())
     assert diagnose_orca(tmp_path, output="dvb_gopt.out") == ()
+
+
+def test_a_compressed_output_parses_like_the_plain_one(tmp_path: Path) -> None:
+    import bz2
+
+    (tmp_path / "sp.out.bz2").write_bytes(bz2.compress((DATA / "water_sp.out").read_bytes()))
+    assert parse_orca_output(tmp_path / "sp.out.bz2") == parse_orca_output(DATA / "water_sp.out")

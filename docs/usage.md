@@ -127,7 +127,7 @@ httk workspace settings set --key orca.command --value /opt/orca/orca WORKSPACE
 httk job new --workflow orca.singlepoint --input molecule=water.xyz \
     --parameter 'keywords="HF def2-SVP"'
 httk workflow run
-httk workflow collect --into results.sqlite
+httk collect --into results.sqlite
 ```
 
 Its parameters are `keywords` (default `B3LYP def2-SVP`), `charge` (default 0)
@@ -155,3 +155,15 @@ from httk.codes.orca.collect import read_total_energy
 def collect(record):
     return {"total_energy": read_total_energy(record.result_file("orca.out"))}
 ```
+
+### Recognized calculations
+
+A finished ORCA run that was not started by a workspace is collected by the
+registered `orca.calculation` collector:
+`httk.workflow.collect_tree(root)` finds every directory holding exactly one
+`<stem>.out` whose first 100 lines carry the ORCA banner (`O   R   C   A`)
+together with `<stem>.inp`, compressed or not, and collects its final single
+point energy. The identity is a digest of the input file, so moving the
+directory keeps it. A directory with several ORCA outputs or without the input
+is reported as unclaimed; an unconverged output is claimed and degraded.
+{py:func}`~httk.codes.orca.collect.find_outputs` is the same banner-based finder.
