@@ -21,6 +21,9 @@ def _isolated_httk_config(tmp_path_factory: pytest.TempPathFactory, monkeypatch:
 
     monkeypatch.setenv("HTTK_CONFIG_HOME", str(tmp_path_factory.mktemp("httk-config")))
     monkeypatch.setenv("HTTK_DATA_HOME", str(tmp_path_factory.mktemp("httk-store")))
+    # A developer's launch prefix or confinement must not leak into the tests.
+    for name in ("HTTK_WORKFLOW_LAUNCH", "HTTK_WORKFLOW_CONFINED", "HTTK_WORKFLOW_NODELIST"):
+        monkeypatch.delenv(name, raising=False)
 
 
 DATA = Path(__file__).resolve().parent / "data"

@@ -37,6 +37,13 @@ so give every ORCA command as an absolute path, e.g. `/opt/orca/orca`, never
 reader, which is why neither the example workflow nor the tests ever look ORCA
 up on `PATH`.
 
+ORCA gets no launch prefix by default, because it starts its own MPI processes
+(`--launch` / `launch=True` prepends the attempt's `HTTK_WORKFLOW_LAUNCH` prefix
+if you do want it; a command that already starts with a launcher such as `srun`
+is then refused). A confined attempt supports single-node ORCA only: when it
+spans more than one node, `run_orca` refuses, because the MPI processes ORCA
+starts cannot reach other nodes from inside the job sandbox.
+
 ## Python
 
 ```python
@@ -105,7 +112,7 @@ energy=$(httk_orca_energy --unit ev)
 | Function | Bridge command | Exit status |
 | --- | --- | --- |
 | `httk_orca_write_input --options FILE [--input orca.inp]` | `orca-write-input` | `0` |
-| `httk_orca_run [--directory] [--input] [--output] [--timeout] -- CMD...` | `orca-run` | `0` completed, `20` crashed, `21` nonconverged, `22` process failure, `124` timeout (as `vasp-run`); prints the report path |
+| `httk_orca_run [--directory] [--input] [--output] [--timeout] [--launch] -- CMD...` | `orca-run` | `0` completed, `20` crashed, `21` nonconverged, `22` process failure, `124` timeout (as `vasp-run`); prints the report path |
 | `httk_orca_energy [--output orca.out] [--unit eh\|ev]` | `orca-energy` | `0` and the energy, `1` when there is none |
 | `httk_orca_converged [--output orca.out]` | `orca-converged` | `0` SCF (and any optimization) converged, `1` otherwise |
 | `httk_orca_diagnose [--output orca.out] [--json]` | `orca-diagnose` | `0` clean, `20` when it printed diagnostics |

@@ -34,7 +34,8 @@ python -m pip install httk-workflow-orca
 ## Use
 
 In a Python runner (give ORCA by its absolute path; ORCA needs that for
-parallel runs):
+parallel runs; ORCA gets no launch prefix by default, and a confined
+attempt supports single-node ORCA only):
 
 ```python
 from httk.codes.orca import run_orca, write_orca_input
