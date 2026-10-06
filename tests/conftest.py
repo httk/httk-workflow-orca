@@ -67,7 +67,7 @@ def run_singlepoint(tmp_path: Path, command: str, capsys: pytest.CaptureFixture[
     """Run and collect one ``orca.singlepoint`` job of water with *command*; return the stored energy in eV."""
 
     store = pytest.importorskip("httk.store")
-    from httk.core import DataRecord, Run
+    from httk.core import Run, TotalEnergyRecord
     from httk.core.cli import CLIContext
     from httk.workflow import TaskManager, Workspace
     from httk.workflow.registry import register_workspace
@@ -92,8 +92,8 @@ def run_singlepoint(tmp_path: Path, command: str, capsys: pytest.CaptureFixture[
 
     with store.Backend.sqlite(database) as backend:
         searcher = store.SqlStore(backend).searcher()
-        energies = [row.energy for row in searcher.results(energy=searcher.variable(DataRecord))]
+        energies = [row.energy for row in searcher.results(energy=searcher.variable(TotalEnergyRecord))]
         searcher = store.SqlStore(backend).searcher()
         runs = list(searcher.results(run=searcher.variable(Run)))
     assert len(energies) == 1 and len(runs) == 1
-    return float(energies[0].value)
+    return float(energies[0].total_energy)
