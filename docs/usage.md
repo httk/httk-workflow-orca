@@ -131,7 +131,7 @@ with `httk plugin install` of the repository, or use it directly with
 
 ```console
 httk workspace settings set --key orca.command --value /opt/orca/orca WORKSPACE
-httk job new --workflow orca.singlepoint --input molecule=water.xyz \
+httk job new --install --workflow orca.singlepoint --input molecule=water.xyz \
     --parameter 'keywords="HF def2-SVP"'
 httk workflow run
 httk collect --into results.sqlite

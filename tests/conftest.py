@@ -70,18 +70,20 @@ def run_singlepoint(tmp_path: Path, command: str, capsys: pytest.CaptureFixture[
     from httk.core import Run, TotalEnergyRecord
     from httk.core.cli import CLIContext
     from httk.workflow import TaskManager, Workspace
+    from httk.workflow.collecting import job_records
     from httk.workflow.registry import register_workspace
     from httk.workflow.scaffold import new_job
     from httk.workflow.workflow_cli import command as workflow_command
 
     workspace = Workspace.initialize(tmp_path / "workspace")
     workspace.set_setting("orca.command", command)
-    job = new_job(workspace, "orca.singlepoint", inputs={"molecule": DATA / "water.xyz"}, parameters=parameters)
+    job = new_job(
+        workspace, "orca.singlepoint", inputs={"molecule": DATA / "water.xyz"}, parameters=parameters, install=True
+    )
     with TaskManager(workspace, heartbeat_interval=0.01) as manager:
         manager.run_until_idle(timeout=600.0)
-    marker = workspace.find_marker_by_id(job.job_id)
-    assert marker is not None
-    assert marker.kind == "succeeded", workspace.read_state(marker).get("failure")
+    [record] = job_records(workspace, states=("succeeded", "failed"))
+    assert (record.job_id, record.state) == (job.job_id, "succeeded"), record.failure
 
     register_workspace("orca", str(workspace.root))
     database = tmp_path / "results.sqlite"

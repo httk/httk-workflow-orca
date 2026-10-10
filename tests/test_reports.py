@@ -77,12 +77,13 @@ def test_stand_in_orca_singlepoint_workflow_runs_and_collects(
 @pytest.mark.slow
 def test_the_workflow_refuses_to_guess_the_orca_command(tmp_path: Path, installed_plugin: None) -> None:
     from httk.workflow import TaskManager, Workspace
+    from httk.workflow.collecting import job_records
     from httk.workflow.scaffold import new_job
 
     workspace = Workspace.initialize(tmp_path / "workspace")
-    job = new_job(workspace, "orca.singlepoint", inputs={"molecule": DATA / "water.xyz"})
+    job = new_job(workspace, "orca.singlepoint", inputs={"molecule": DATA / "water.xyz"}, install=True)
     with TaskManager(workspace, heartbeat_interval=0.01) as manager:
         manager.run_until_idle(timeout=120.0)
-    marker = workspace.find_marker_by_id(job.job_id)
-    assert marker is not None and marker.kind == "failed"
-    assert "orca.not_configured" in json.dumps(workspace.read_state(marker).get("failure"))
+    [record] = job_records(workspace, states=("succeeded", "failed"))
+    assert (record.job_id, record.state) == (job.job_id, "failed")
+    assert record.failure is not None and record.failure.code == "orca.not_configured", record.failure
