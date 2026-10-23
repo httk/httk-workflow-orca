@@ -29,3 +29,7 @@ import httk.codes.orca
 (reference,) = credits.entries()["Calculations with ORCA"]
 """
     subprocess.run([sys.executable, "-c", script], check=True)
+
+
+def test_orca_declares_its_application_settings() -> None:
+    assert code_support("orca").settings == ("orca.command",)
