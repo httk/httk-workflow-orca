@@ -5,6 +5,7 @@
 name = "orca.singlepoint"
 description = "one ORCA single-point energy of one molecule"
 requires = ["httk-workflow>=2.1.1", "httk-workflow-orca>=0.1.0"]
+settings = ["orca.command"]
 
 [workflow.runner]
 entry = "run.py"
