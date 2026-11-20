@@ -55,6 +55,23 @@ def test_a_clean_rerun_in_the_same_directory_is_not_read_as_the_earlier_failure(
     assert run_orca(_replay("water_sp.out"), directory=tmp_path).classification == "completed"
 
 
+def test_a_rerun_does_not_auto_start_from_the_earlier_wavefunction(tmp_path: Path) -> None:
+    for name in ("orca.inp", "orca.xyz", "orca.gbw", "orca.densities", "orca.scfp", "orca.scfr"):
+        (tmp_path / name).write_text(name, encoding="utf-8")
+    # Records which of the input's files ORCA would have found at start.
+    found = "import os; names = ' '.join(os.listdir('.')); open('found', 'w').write(names)"
+    run_orca([sys.executable, "-c", found], directory=tmp_path)
+    present = set((tmp_path / "found").read_text(encoding="utf-8").split())
+    assert {"orca.inp", "orca.xyz"} <= present
+    assert not present & {"orca.gbw", "orca.densities", "orca.scfp", "orca.scfr"}
+
+    (tmp_path / "orca.gbw").write_text("orca.gbw", encoding="utf-8")
+    run_orca([sys.executable, "-c", found], directory=tmp_path, autostart=True)
+    assert "orca.gbw" in (tmp_path / "found").read_text(encoding="utf-8").split()
+    assert (tmp_path / "orca.gbw").read_text(encoding="utf-8") == "orca.gbw"
+    assert all((tmp_path / name).read_text(encoding="utf-8") == name for name in ("orca.inp", "orca.xyz"))
+
+
 # A stand-in ORCA for the workflow: checks it was given a written input, then
 # prints the converged water fixture.
 _STAND_IN = f"""import sys

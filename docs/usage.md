@@ -75,7 +75,10 @@ else:
   cycle count of the last SCF, geometry-optimization convergence, whether ORCA
   terminated normally, and the error lines.
 - {py:func}`~httk.codes.orca.run_orca` runs the command with the input file name
-  appended under the *httk-workflow* process supervisor, saves standard output
+  appended under the *httk-workflow* process supervisor (first deleting the
+  input's leftover `.gbw`, `.densities`, `.scfp` and `.scfr` files, so a rerun
+  never auto-starts from an interrupted run's wavefunction; pass
+  `autostart=True` to keep them), saves standard output
   as `orca.out`, and returns an {py:class}`~httk.codes.orca.OrcaRunReport`
   classified as `completed`, `crashed`, `nonconverged`, `process_failure` or
   `timeout`, also written to `orca-run-report.json`.

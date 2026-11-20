@@ -74,6 +74,7 @@ def run_orca(
     launch: bool | None = None,
     termination_grace: float = 10.0,
     report_path: str | os.PathLike[str] = "orca-run-report.json",
+    autostart: bool = False,
 ) -> OrcaRunReport:
     """Run ORCA under supervision and write a classified report.
 
@@ -83,6 +84,10 @@ def run_orca(
     ``["/opt/orca/orca"]`` rather than ``["orca"]`` (a bare ``orca`` on
     ``PATH`` is also often the unrelated GNOME screen reader). Standard output
     goes to *output_file* and standard error beside it with the suffix ``.err``.
+    Unless *autostart* is set, the input's leftover ``.gbw``, ``.densities``,
+    ``.scfp`` and ``.scfr`` files are deleted first, because ORCA's AutoStart would
+    otherwise resume from a possibly truncated wavefunction of an earlier,
+    interrupted run.
 
     ORCA is not given the attempt's launch prefix by default, since it starts its
     own MPI; ``launch=True`` prepends ``HTTK_WORKFLOW_LAUNCH`` (a command that already
@@ -100,6 +105,9 @@ def run_orca(
         (``None``) and ``False`` run *argv* as given.
     :param termination_grace: Allow this many seconds for graceful termination.
     :param report_path: Write the report at this directory-relative path.
+    :param autostart: Keep the input's ``.gbw`` and scratch files so ORCA's AutoStart
+        may read ``<base>.gbw``; the default (``False``) removes them so ORCA starts
+        from its own guess, the restart-safe choice for workflow steps.
     :return: The classified run report.
     """
 
@@ -111,6 +119,9 @@ def run_orca(
     command = launch_command(argv, launch=launch is True)
     root = Path(directory).resolve()
     output = root / output_file
+    if not autostart:
+        for suffix in (".gbw", ".densities", ".scfp", ".scfr"):
+            (root / input_file).with_suffix(suffix).unlink(missing_ok=True)
     # ponytail: no live monitor or remedy ladder; add them when a real campaign needs them.
     process = ProcessSupervisor().run(
         [*command, input_file],
