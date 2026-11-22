@@ -130,13 +130,13 @@ The repository's `workflows/orca-singlepoint` is the workflow package
 `.xyz` file, staged as `molecule.xyz`), writes `orca.inp`, runs ORCA, and fails
 with the first diagnostic code when the calculation is not clean. Install it
 with `httk plugin install` of the repository, or use it directly with
-`--workflow-dir`:
+`httk job new DIR`:
 
 ```console
-httk workspace settings set --key orca.command --value /opt/orca/orca WORKSPACE
-httk job new --install --workflow orca.singlepoint --input molecule=water.xyz \
+httk workspace set -w WORKSPACE orca.command=/opt/orca/orca
+httk job new --install orca.singlepoint --input molecule=water.xyz \
     --parameter 'keywords="HF def2-SVP"'
-httk workflow run
+httk run
 httk collect --into results.sqlite
 ```
 
